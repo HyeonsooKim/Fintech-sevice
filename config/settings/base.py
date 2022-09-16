@@ -62,6 +62,7 @@ CORS_ALLOW_HEADERS = (
 
 LOCAL_APPS = [
     # Add local apps
+    'apps.account.apps.AccountConfig'
 ]
 
 DJANGO_APPS = [
