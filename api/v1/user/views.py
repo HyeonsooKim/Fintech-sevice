@@ -1,22 +1,26 @@
-from rest_framework import viewsets
-from .serializers import RegisterSerializer
+from .serializers import SignUpSerializer, SignInSerializers
 from apps.user.models import User
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import status
 from rest_framework.response import Response
 import time
 
-class UserRegisterView(APIView):
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
+class UserSignUpView(APIView):
+    serializer_class = SignUpSerializer
 
-        if serializer.is_valid():
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid(raise_exception=False):
             user = serializer.save()
+
             # jwt token 접근해주기
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
+
             res = Response(
                 {
                     "user": serializer.data,
@@ -28,8 +32,43 @@ class UserRegisterView(APIView):
                 },
                 status=status.HTTP_200_OK,
             ) 
+
+            #쿠키데이터 저장
             res.set_cookie("access", access_token, httponly=True)
             res.set_cookie("refresh", refresh_token, httponly=True)
             return res
-            
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserSignInView(APIView):
+    serializer_class = SignInSerializers
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        print(serializer, '\n\n', request.data)
+        if serializer.is_valid(raise_exception=False):
+            print('2')
+            user = serializer.validated_data['user']
+            access_token = serializer.validated_data['access']
+            refresh_token = serializer.validated_data['refresh']
+            print("response", user, access_token, refresh_token)
+            res = Response(
+                {
+                    "user": user,
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            ) 
+
+            #쿠키데이터 저장
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+
+            return res
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
