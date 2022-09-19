@@ -2,22 +2,44 @@ from apps.user.models import User
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from django.contrib.auth import get_user_model
+from datetime import date
 
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        required=True,
+        write_only=True,
+        style={'input_type': 'password'}
+    )
+    birth_date = serializers.DateField(
+        required=True,
+        write_only=True
+    )
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'password', 'name', 'birth_date']
 
     def create(self, validated_data):
-        login_id = validated_data.get('login_id')
-        email = validated_data.get('email')
         password = validated_data.get('password')
         user = User(
-            login_id=login_id,
-            email=email
+            username=validated_data.get('username'),
+            password=password,
+            name=validated_data.get('name'),
         )
+        user.birth_date = validated_data.get('birth_date')
         user.set_password(password)
         user.save()
+
         return user
+    
+    def validate(self, data):
+        id = data.get('id', None)
+
+        if User.objects.filter(id=id).exists():
+            raise serializers.ValidationError("Username already exists")
+
+        data['date_joined'] = date.today()
+
+        return data

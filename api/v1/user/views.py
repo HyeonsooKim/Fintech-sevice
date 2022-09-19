@@ -10,6 +10,7 @@ import time
 class UserRegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
+
         if serializer.is_valid():
             user = serializer.save()
             # jwt token 접근해주기
@@ -30,4 +31,5 @@ class UserRegisterView(APIView):
             res.set_cookie("access", access_token, httponly=True)
             res.set_cookie("refresh", refresh_token, httponly=True)
             return res
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

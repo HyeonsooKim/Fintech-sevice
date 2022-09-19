@@ -43,13 +43,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=False
         )
     is_active = models.BooleanField(
-    verbose_name=_('Is active'),
-    default=True
-    )
+        verbose_name=_('Is active'),
+        default=True
+        )
     date_joined = models.DateTimeField(
-    verbose_name=_('Date joined'),
-    default=timezone.now
-    )
+        verbose_name=_('Date joined'),
+        default=timezone.now
+        )
 
     objects = CustomUserManager()
 
