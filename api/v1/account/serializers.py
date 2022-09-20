@@ -1,24 +1,24 @@
-from apps.account.models import AccountAsset, Stock, AccountStock, TransactionHistory
+from apps.account.models import Account
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-class AccountAssetSerializer(serializers.ModelSerializer):
+class AccountSerializer(serializers.ModelSerializer):
+    total_assets = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True)
     class Meta:
-        model = AccountAsset
-        fields = "__all__"
-        # read_only_fields = []
+        model = Account
+        fields = ('id', 'user', 'stock_firm', 'account_name', 'account_number', 'total_assets')
 
-class StockSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Stock
-        fields = "__all__"
 
-class AccountStockSerializer(serializers.ModelSerializer):
+class AccountDetailSerializer(AccountSerializer):
+    total_profit = serializers.SerializerMethodField()
+    profit_percent = serializers.SerializerMethodField()
+    
     class Meta:
-        model = AccountStock
-        fields = "__all__"
+        model = Account
+        fields = ('id', 'user', 'stock_firm', 'account_name', 'account_number', 'total_profit', 'profit_percent', 'total_assets')
 
-class TransactionHistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TransactionHistory
-        fields = "__all__"
+    def get_total_profits(self, obj):
+        return obj.total_assets - obj.invest_principal
+
+    def get_profits_ratio(self, obj):
+        return ((obj.total_assets - obj.invest_principal) / obj.invest_principal) * 100
