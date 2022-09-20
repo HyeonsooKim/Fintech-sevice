@@ -4,7 +4,7 @@ from .views import AccountViewSet
 
 # account_asset 목록 보여주기
 router = routers.DefaultRouter()
-router.register(r'account-asset', AccountViewSet)
+router.register(r'', AccountViewSet)
 
 
 urlpatterns =[

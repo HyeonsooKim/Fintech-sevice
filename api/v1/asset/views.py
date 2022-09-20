@@ -1,77 +1,33 @@
 from django.shortcuts import render
-
-# Create your views here.
-from .serializers import SignUpSerializer, SignInSerializers
-from apps.user.models import User
-from django.http import JsonResponse
-from rest_framework.views import APIView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .serializers import AssetInfoSerializer, AssetSerializer
+from django.db.models import F
+from apps.asset.models import Asset
+from apps.account.models import Account
 from rest_framework import status
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
-import time
 
-class UserSignUpView(APIView):
-    serializer_class = SignUpSerializer
+class AssetViewSet(ReadOnlyModelViewSet):
+    """ 보유 종목 조회 Viewset """
+    # queryset = Asset.objects.all()
+    # serializer_class = AssetSerializer
+    def get_queryset(self):
+        print("self.request: ", self.request.user, dir(self.request.user))
+        account = self.request.user.account.all()[0].id
+        print(account)
+        assets = Asset.objects.filter(account=account).annotate(
+            total=F('price') * F('count')
+        )
+        return assets
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+    def get_serializer_class(self):
+        if hasattr(self, 'action') and self.action == 'retrieve':
+            return None
 
-        if serializer.is_valid(raise_exception=False):
-            user = serializer.save()
+        elif hasattr(self, 'action') and self.action == 'list':
+            return AssetSerializer
 
-            # jwt token 접근해주기
-            token = TokenObtainPairSerializer.get_token(user)
-            refresh_token = str(token)
-            access_token = str(token.access_token)
-
-            res = Response(
-                {
-                    "user": serializer.data,
-                    "message": "register successs",
-                    "token": {
-                        "access": access_token,
-                        "refresh": refresh_token,
-                    },
-                },
-                status=status.HTTP_200_OK,
-            ) 
-
-            #쿠키데이터 저장
-            res.set_cookie("access", access_token, httponly=True)
-            res.set_cookie("refresh", refresh_token, httponly=True)
-            return res
-
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class UserSignInView(APIView):
-    serializer_class = SignInSerializers
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        print(serializer, '\n\n', request.data)
-        if serializer.is_valid(raise_exception=False):
-            print('2')
-            user = serializer.validated_data['user']
-            access_token = serializer.validated_data['access']
-            refresh_token = serializer.validated_data['refresh']
-            print("response", user, access_token, refresh_token)
-            res = Response(
-                {
-                    "user": user,
-                    "token": {
-                        "access": access_token,
-                        "refresh": refresh_token,
-                    },
-                },
-                status=status.HTTP_200_OK,
-            ) 
-
-            #쿠키데이터 저장
-            res.set_cookie("access", access_token, httponly=True)
-            res.set_cookie("refresh", refresh_token, httponly=True)
-
-            return res
-
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def retrieve(self, request, *args, **kwargs):
+        """ 보유 종목 상세 조회는 아직 제공하지 않습니다. """
+        response = {'ERROR': '올바르지 않은 접근입니다.'}
+        return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -13,14 +13,10 @@ class SignUpSerializer(serializers.ModelSerializer):
         write_only=True,
         style={'input_type': 'password'}
     )
-    birth_date = serializers.DateField(
-        required=True,
-        write_only=True
-    )
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'name', 'birth_date']
+        fields = ['username', 'password', 'name']
 
     def create(self, validated_data):
         password = validated_data.get('password')
@@ -29,7 +25,6 @@ class SignUpSerializer(serializers.ModelSerializer):
             password=password,
             name=validated_data.get('name'),
         )
-        user.birth_date = validated_data.get('birth_date')
         user.set_password(password)
         user.save()
 

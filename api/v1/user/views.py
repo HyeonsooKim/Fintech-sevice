@@ -46,13 +46,10 @@ class UserSignInView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        print(serializer, '\n\n', request.data)
         if serializer.is_valid(raise_exception=False):
-            print('2')
             user = serializer.validated_data['user']
             access_token = serializer.validated_data['access']
             refresh_token = serializer.validated_data['refresh']
-            print("response", user, access_token, refresh_token)
             res = Response(
                 {
                     "user": user,

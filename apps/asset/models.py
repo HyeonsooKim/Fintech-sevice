@@ -14,7 +14,6 @@ class AssetInfo(models.Model):
     stock_name = models.CharField(max_length=20, verbose_name="종목명")
     isin = models.CharField(max_length=20, verbose_name="ISIN")
     asset_group = models.CharField(max_length=20, verbose_name="자산그룹", choices=GROUPS)
-    current_stock_price = models.PositiveIntegerField(verbose_name="현재가")
 
 class Asset(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, db_column='account_id', related_name='asset')

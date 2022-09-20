@@ -64,6 +64,7 @@ LOCAL_APPS = [
     # Add local apps
     'apps.account.apps.AccountConfig',
     'apps.user.apps.UserConfig',
+    'apps.asset.apps.AssetConfig',
 ]
 
 DJANGO_APPS = [

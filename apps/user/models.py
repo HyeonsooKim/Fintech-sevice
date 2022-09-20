@@ -30,13 +30,11 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(
-        verbose_name=_('아이디'),
         max_length=30,
         unique=True,
         blank=False
         )
     name = models.CharField(
-        verbose_name=_('이름'),
         max_length=30,
         blank=False
         )
