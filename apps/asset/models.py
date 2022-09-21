@@ -1,5 +1,4 @@
 from django.db import models
-from apps.account.models import Account
 
 class AssetInfo(models.Model):
     GROUPS = (
@@ -15,8 +14,5 @@ class AssetInfo(models.Model):
     isin = models.CharField(max_length=20, verbose_name="ISIN")
     asset_group = models.CharField(max_length=20, verbose_name="자산그룹", choices=GROUPS)
 
-class Asset(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, db_column='account_id', related_name='asset')
-    info = models.ForeignKey(AssetInfo, on_delete=models.DO_NOTHING, db_column='asset_info', related_name='info')
-    quantity = models.IntegerField(verbose_name="보유수량")
-    price = models.DecimalField(verbose_name='현재가', max_digits=20, decimal_places=2)
+    def __str__(self):
+        return self.stock_name

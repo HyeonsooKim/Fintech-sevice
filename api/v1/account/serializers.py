@@ -1,4 +1,5 @@
-from apps.account.models import Account
+from apps.account.models import Account, AccountAsset
+from api.v1.asset.serializers import AssetInfoSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
@@ -7,6 +8,15 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ('id', 'user', 'stock_firm', 'account_name', 'account_number', 'total_assets')
+
+
+class AccountAssetSerializer(serializers.ModelSerializer):
+    info = AssetInfoSerializer(read_only=True)
+    total = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True)
+
+    class Meta:
+        model = AccountAsset
+        fields = ('info', 'total')
 
 
 class AccountDetailSerializer(AccountSerializer):
