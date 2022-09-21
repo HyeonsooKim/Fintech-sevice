@@ -66,6 +66,7 @@ LOCAL_APPS = [
     'apps.user.apps.UserConfig',
     'apps.asset.apps.AssetConfig',
     'apps.common.apps.CommonConfig',
+    'apps.transaction.apps.TransactionConfig',
 ]
 
 DJANGO_APPS = [
@@ -82,6 +83,8 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 INSTALLED_APPS = LOCAL_APPS + DJANGO_APPS + THIRD_PARTY_APPS
@@ -156,6 +159,17 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+}
+
+# DRF-Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Bulletin Board Service',
+    'DESCRIPTION': 'Provide Bulletin Board Service with password authentification and weather api',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
 }
 
 LANGUAGE_CODE = 'en-us'

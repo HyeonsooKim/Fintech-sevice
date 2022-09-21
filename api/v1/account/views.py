@@ -1,6 +1,7 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
+from rest_framework.mixins import CreateModelMixin
 from django.shortcuts import get_object_or_404
-from .serializers import AccountSerializer, AccountAssetSerializer, AccountDetailSerializer
+from .serializers import AccountSerializer, AccountAssetSerializer
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from apps.account.models import Account, AccountAsset
 from django.db.models import Sum, F
