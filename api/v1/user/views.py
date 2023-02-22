@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 import time
 
-class UserSignUpView(ModelViewSet):
+class UserViewset(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
